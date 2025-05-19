@@ -13,7 +13,7 @@
 </head>
 <body class="bg-gray-100 text-sm p-6">
 <h1 class="text-2xl font-bold mb-4">📊 DevTrace Dashboard</h1>
-
+<canvas id="requestsChart" width="400" height="200"></canvas>
 <table class="min-w-full bg-white rounded shadow">
     <thead>
     <tr class="bg-gray-200 text-left">
@@ -37,5 +37,59 @@
     }
     </tbody>
 </table>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('requestsChart').getContext('2d');
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Requisições por segundo',
+                data: [],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            animation: false,
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Tempo'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Quantidade'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    async function fetchData() {
+        const res = await fetch('/devtrace/logs');
+        const logs = await res.json();
+
+        const grouped = {};
+        logs.forEach(log => {
+            const second = new Date(log.timestamp).toISOString().substring(14, 19);
+            grouped[second] = (grouped[second] || 0) + 1;
+        });
+
+        chart.data.labels = Object.keys(grouped).slice(-10);
+        chart.data.datasets[0].data = Object.values(grouped).slice(-10);
+        chart.update();
+    }
+
+    setInterval(fetchData, 2000);
+</script>
+
 </body>
 </html>

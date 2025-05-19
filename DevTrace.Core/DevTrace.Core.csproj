@@ -9,9 +9,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\DevTrace.Shared\DevTrace.Shared.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Models\" />
-      <Folder Include="Stores\" />
+        <ProjectReference Include="..\DevTrace.UI\DevTrace.UI.csproj" />
     </ItemGroup>
 </Project>

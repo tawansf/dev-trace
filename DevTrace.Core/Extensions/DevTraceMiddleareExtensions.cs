@@ -1,4 +1,5 @@
 using DevTrace.Core.Middleware;
+using DevTrace.Shared.Stores;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace DevTrace.Core.Extensions;
@@ -26,6 +27,11 @@ public static class DevTraceMiddleareExtensions
         app.UseEndpoints(e =>
         {
             e.MapRazorPages();
+            e.MapGet("/devtrace/logs", context =>
+            {
+                var logs = RequestLogStore.Logs;
+                return context.Response.WriteAsJsonAsync(logs);
+            });
         });
 
         return app;
