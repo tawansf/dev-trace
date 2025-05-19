@@ -5,8 +5,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <RazorLangVersion>8.0</RazorLangVersion>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\DevTrace.UI\DevTrace.UI.csproj" />
+        <ProjectReference Include="..\DevTrace.Shared\DevTrace.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Models\" />
+      <Folder Include="Stores\" />
     </ItemGroup>
 </Project>

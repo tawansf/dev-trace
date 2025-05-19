@@ -1,11 +1,12 @@
 using System.Diagnostics;
-using System.Text.Json;
+using DevTrace.Shared.Models;
+using DevTrace.Shared.Stores;
 
 namespace DevTrace.Core.Middleware;
 
 public sealed class DevTraceMiddleware(RequestDelegate next)
 {
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         var stopwatch = Stopwatch.StartNew();
 
@@ -21,15 +22,16 @@ public sealed class DevTraceMiddleware(RequestDelegate next)
         finally
         {
             stopwatch.Stop();
-            var log = new
+            var log = new RequestLog
             {
-                context.Request.Path,
-                context.Response.StatusCode,
-                Duration = stopwatch.ElapsedMilliseconds,
-                Timestamp = DateTimeOffset.UtcNow
+                Timestamp = DateTime.UtcNow,
+                Method = context.Request.Method,
+                Path = context.Request.Path,
+                StatusCode = context.Response.StatusCode,
+                ElapsedMilliseconds = stopwatch.ElapsedMilliseconds
             };
             
-            Console.WriteLine(JsonSerializer.Serialize(log));
+            RequestLogStore.Add(log);
         }
         
     }

@@ -23,4 +23,7 @@
       <Folder Include="Components\" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\DevTrace.Shared\DevTrace.Shared.csproj" />
+    </ItemGroup>
 </Project>

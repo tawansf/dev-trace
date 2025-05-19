@@ -1,5 +1,41 @@
 @page
 @model DevTrace.UI.Pages.DevTrace.IndexModel
 
-<h1>DevTrace Dashboard</h1>
-<p>O painel está funcionando normalmente.</p>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DevTrace Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 text-sm p-6">
+<h1 class="text-2xl font-bold mb-4">📊 DevTrace Dashboard</h1>
+
+<table class="min-w-full bg-white rounded shadow">
+    <thead>
+    <tr class="bg-gray-200 text-left">
+        <th class="p-2">Time</th>
+        <th class="p-2">Method</th>
+        <th class="p-2">Path</th>
+        <th class="p-2">Status</th>
+        <th class="p-2">Elapsed (ms)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var log in Model.Logs)
+    {
+        <tr class="border-t">
+            <td class="p-2">@log.Timestamp.ToLocalTime().ToString("HH:mm:ss")</td>
+            <td class="p-2 font-mono">@log.Method</td>
+            <td class="p-2 font-mono">@log.Path</td>
+            <td class="p-2">@log.StatusCode</td>
+            <td class="p-2">@log.ElapsedMilliseconds</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</body>
+</html>
