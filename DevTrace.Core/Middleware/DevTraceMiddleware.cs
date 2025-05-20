@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using DevTrace.Shared.Models;
 using DevTrace.Shared.Stores;
+using Microsoft.AspNetCore.Http;
 
 namespace DevTrace.Core.Middleware;
 
@@ -33,6 +34,5 @@ public sealed class DevTraceMiddleware(RequestDelegate next)
             
             RequestLogStore.Add(log);
         }
-        
     }
 }
