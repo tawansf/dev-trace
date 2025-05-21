@@ -1,0 +1,43 @@
+@page "/devtrace"
+
+@using global::DevTrace.Core.Entities
+@using global::DevTrace.Core.Services
+@inject ITraceEventService TraceEventService
+
+<h3>DevTrace Events</h3>
+
+@if (events == null)
+{
+    <p><em>Loading...</em></p>
+    }
+    else
+    {
+    <table>
+        <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Level</th>
+            <th>Message</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var evt in events)
+            {
+            <tr>
+                <td>@evt.Timestamp</td>
+                <td>@evt.Level</td>
+        <td>@evt.Message</td>
+        </tr>
+    }
+    </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<TraceEvent>? events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = await TraceEventService.GetEventsAsync();
+    }
+}

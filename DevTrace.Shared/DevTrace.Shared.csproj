@@ -12,15 +12,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.15" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <Content Update="wwwroot\**\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <Pack>True</Pack>
-            <PackagePath>wwwroot</PackagePath>
-            <EmbedInPackage>true</EmbedInPackage>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
+      <Folder Include="Extensions\" />
+      <Folder Include="Helpers\" />
     </ItemGroup>
 
 </Project>
