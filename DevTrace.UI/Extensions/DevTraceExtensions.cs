@@ -7,6 +7,8 @@ public static class DevTraceExtensions
 {
     public static IServiceCollection AddDevTrace(this IServiceCollection services)
     {
+        services.AddRazorPages();
+        services.AddServerSideBlazor();
         services.AddDevTraceUI();
         return services;
     }

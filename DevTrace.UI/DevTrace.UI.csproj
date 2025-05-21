@@ -17,8 +17,4 @@
         <ProjectReference Include="..\DevTrace.Core\DevTrace.Core.csproj" />
     </ItemGroup>
     
-    <ItemGroup>
-      <Folder Include="Components\" />
-    </ItemGroup>
-    
 </Project>
