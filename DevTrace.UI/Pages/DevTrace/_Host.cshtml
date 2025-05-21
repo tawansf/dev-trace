@@ -1,0 +1,22 @@
+@page "/DevTrace"
+@namespace DevTrace.UI.Pages.DevTrace
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>DevTrace</title>
+    <base href="~/DevTrace/" />
+</head>
+<body>
+<app>
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+</app>
+
+<script src="_framework/blazor.server.js"></script>
+</body>
+</html>

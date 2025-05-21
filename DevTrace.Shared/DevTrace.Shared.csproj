@@ -1,9 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+        <RazorLangVersion>8.0</RazorLangVersion>
+        <OutputType>Library</OutputType>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.15" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Content Update="wwwroot\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>True</Pack>
+            <PackagePath>wwwroot</PackagePath>
+            <EmbedInPackage>true</EmbedInPackage>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
 
 </Project>

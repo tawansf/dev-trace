@@ -1,23 +1,26 @@
-using DevTrace.Core.Middleware;
-using DevTrace.Shared.Stores;
+using DevTrace.UI.Middleware;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace DevTrace.UI.Extensions;
-
-public static class DevTraceMiddlewareExtensions
+namespace DevTrace.UI.Extensions
 {
-    public static IApplicationBuilder UseDevTraceDashboard(this IApplicationBuilder app)
+    public static class DevTraceUIExtensions
     {
-        app.UseStaticFiles();
-        app.UseRouting();
-        app.UseEndpoints(endpoints =>
+        public static IServiceCollection AddDevTraceUI(this IServiceCollection services)
         {
-            endpoints.MapRazorPages();
-            endpoints.MapGet("/devtrace/logs", context =>
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
+            return services;
+        }
+
+        public static IApplicationBuilder UseDevTraceUI(this IApplicationBuilder app)
+        {
+            app.UseEndpoints(endpoints =>
             {
-                var logs = RequestLogStore.Logs;
-                return context.Response.WriteAsJsonAsync(logs);
+                endpoints.MapBlazorHub();
+                endpoints.MapFallbackToPage("/devtrace/{*catchall}", "/DevTrace/_Host");
             });
-        });
-        return app;
+            return app;
+        }
     }
 }

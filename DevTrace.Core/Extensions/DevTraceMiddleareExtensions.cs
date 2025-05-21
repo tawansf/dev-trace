@@ -5,9 +5,5 @@ namespace DevTrace.Core.Extensions;
 
 public static class DevTraceMiddlewareExtensions
 {
-    public static IApplicationBuilder UseDevTrace(this IApplicationBuilder app)
-    {
-        app.UseMiddleware<DevTraceMiddleware>();
-        return app;
-    }
+    public static IApplicationBuilder UseDevTrace(this IApplicationBuilder app) => app.UseMiddleware<DevTraceMiddleware>();
 }
