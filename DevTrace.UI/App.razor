@@ -1,10 +1,11 @@
-@using Microsoft.AspNetCore.Components.Routing
+@using global::DevTrace.UI.Shared
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
     <NotFound>
-        <h1>Page not found</h1>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Página não encontrada.</p>
+        </LayoutView>
     </NotFound>
 </Router>
-

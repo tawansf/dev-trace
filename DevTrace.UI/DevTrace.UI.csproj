@@ -17,4 +17,9 @@
         <ProjectReference Include="..\DevTrace.Core\DevTrace.Core.csproj" />
     </ItemGroup>
     
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Components\Chart.razor" />
+      <UpToDateCheckInput Remove="Components\EventTable.razor" />
+    </ItemGroup>
+    
 </Project>

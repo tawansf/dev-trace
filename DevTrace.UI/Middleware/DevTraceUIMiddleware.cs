@@ -35,7 +35,7 @@ namespace DevTrace.UI.Middleware
         {
             var path = context.Request.Path.Value;
 
-            if (Regex.IsMatch(path, @"^/devtrace(/)?$", RegexOptions.IgnoreCase))
+            if (path != null && Regex.IsMatch(path, @"^/devtrace(/)?$", RegexOptions.IgnoreCase))
             {
                 context.Response.Redirect("/devtrace/index.html");
                 return;

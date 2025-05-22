@@ -1,4 +1,5 @@
 using DevTrace.Core.Entities;
+using DevTrace.Shared.Stores;
 
 namespace DevTrace.Core.Services;
 
@@ -6,11 +7,17 @@ public class TraceEventService: ITraceEventService
 {
     public Task<IReadOnlyList<TraceEvent>> GetEventsAsync(int maxCount = 100)
     {
-        var list = new List<TraceEvent>
+        var logs = RequestLogStore.GetAll();
+
+        var events = logs.Select(log => new TraceEvent
         {
-            new() { Id = Guid.NewGuid(), Timestamp = DateTime.Now, Level = "Info", Message = "Evento simulado 1" },
-            new() { Id = Guid.NewGuid(), Timestamp = DateTime.Now, Level = "Warning", Message = "Evento simulado 2" }
-        };
-        return Task.FromResult((IReadOnlyList<TraceEvent>)list);
+            Id = Guid.NewGuid(),
+            Timestamp = log.Timestamp,
+            Message = $"{log.Method} {log.Path}",
+            Source = "Middleware",
+            Level = log.StatusCode >= 500 ? "Error" : "Info"
+        }).ToList();
+
+        return Task.FromResult((IReadOnlyList<TraceEvent>)events);
     }
 }

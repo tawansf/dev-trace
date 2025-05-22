@@ -1,0 +1,31 @@
+@typeparam TItem
+
+<table class="table-auto w-full border-collapse border border-gray-300">
+    <thead>
+    <tr class="bg-gray-200">
+        <th class="border border-gray-300 px-4 py-2">Timestamp</th>
+        <th class="border border-gray-300 px-4 py-2">Level</th>
+        <th class="border border-gray-300 px-4 py-2">Source</th>
+        <th class="border border-gray-300 px-4 py-2">Message</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Items != null)
+    {
+        foreach (var item in Items.Cast<global::DevTrace.Core.Entities.TraceEvent>())
+        {
+            <tr>
+                <td class="border border-gray-300 px-4 py-2">@item.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                <td class="border border-gray-300 px-4 py-2">@item.Level</td>
+                <td class="border border-gray-300 px-4 py-2">@item.Source</td>
+                <td class="border border-gray-300 px-4 py-2">@item.Message</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<TItem>? Items { get; set; }
+}

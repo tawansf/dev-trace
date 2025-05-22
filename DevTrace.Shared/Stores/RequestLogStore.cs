@@ -5,17 +5,23 @@ namespace DevTrace.Shared.Stores;
 public static class RequestLogStore
 {
     private static readonly List<RequestLog> _logs = new();
-
-    public static IReadOnlyList<RequestLog> Logs => _logs.AsReadOnly();
+    private static readonly object _lock = new();
 
     public static void Add(RequestLog log)
     {
-        _logs.Add(log);
-        if (_logs.Count > 1000)
+        lock (_lock)
         {
-            _logs.RemoveAt(0);
+            _logs.Add(log);
+            if (_logs.Count > 1000)
+                _logs.RemoveAt(0);
         }
     }
-    
-    public static void Clear() => _logs.Clear();
+
+    public static IReadOnlyList<RequestLog> GetAll()
+    {
+        lock (_lock)
+        {
+            return _logs.ToList();
+        }
+    }
 }

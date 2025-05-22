@@ -1,3 +1,4 @@
+using DevTrace.Core.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,8 @@ public static class DevTraceExtensions
 
     public static IApplicationBuilder UseDevTrace(this IApplicationBuilder app)
     {
+        app.UseMiddleware<DevTraceMiddleware>();
+        
         app.UseStaticFiles();
 
         app.UseRouting();
