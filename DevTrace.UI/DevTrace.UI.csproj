@@ -18,8 +18,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <UpToDateCheckInput Remove="Components\Chart.razor" />
-      <UpToDateCheckInput Remove="Components\EventTable.razor" />
+        <EmbeddedResource Include="wwwroot\**\*" />
     </ItemGroup>
     
 </Project>

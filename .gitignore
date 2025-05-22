@@ -6,3 +6,5 @@ riderModule.iml
 DevTrace.WebExample/
 .idea/
 DevTrace.sln.DotSettings.user
+DevTrace.UI/node_modules/
+DevTrace.UI/package-lock.json
