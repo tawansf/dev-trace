@@ -28,9 +28,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.DurationMs</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.CorrelationId</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        @if (!string.IsNullOrWhiteSpace(item.Exception))
+                        @if (!string.IsNullOrWhiteSpace(item.ExceptionDetails))
                         {
-                            <span title="@item.Exception" style="cursor: help; color: red;">Sim</span>
+                            <span title="@item.ExceptionDetails" style="cursor: help; color: red;">Sim</span>
                         }
                         else
                         {

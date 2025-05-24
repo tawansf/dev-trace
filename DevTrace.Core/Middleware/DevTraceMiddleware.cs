@@ -1,11 +1,13 @@
 using System.Diagnostics;
 using DevTrace.Core.Repositories;
+using DevTrace.Shared.Constants;
 using DevTrace.Shared.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace DevTrace.Core.Middleware;
 
-public sealed class DevTraceMiddleware(RequestDelegate next, ITraceEventRepository traceEventRepository)
+public sealed class DevTraceMiddleware(RequestDelegate next, ITraceEventRepository traceEventRepository, ILogger<DevTraceMiddleware> logger)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -20,43 +22,65 @@ public sealed class DevTraceMiddleware(RequestDelegate next, ITraceEventReposito
         try
         {
             await next(context);
+            stopwatch.Stop();
+            
+            var successEvent = CreateTraceEvent(context, stopwatch, null);
+            await SafeAddTraceEventAsync(successEvent);
         }
         catch (Exception ex)
         {
-            stopwatch.Stop();
-
-            var errorEvent = new TraceEvent
+            if (stopwatch.IsRunning)
             {
-                Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow,
-                Level = "Error",
-                Message = ex.Message,
-                Exception = ex.ToString(),
-                Source = context.Request.Path,
-                CorrelationId = context.TraceIdentifier,
-                ClientIp = context.Connection.RemoteIpAddress?.ToString(),
-                DurationMs = stopwatch.ElapsedMilliseconds
-            };
+                stopwatch.Stop();
+            }
 
-            await traceEventRepository.AddAsync(errorEvent);
+            var errorEvent = CreateTraceEvent(context, stopwatch, ex);
+            await SafeAddTraceEventAsync(errorEvent);
 
             throw;
         }
-
-        stopwatch.Stop();
-
+    }
+    private TraceEvent CreateTraceEvent(HttpContext context, Stopwatch stopwatch, Exception? exception)
+    {
         var traceEvent = new TraceEvent
         {
             Id = Guid.NewGuid(),
             Timestamp = DateTime.UtcNow,
-            Level = "Info",
-            Message = "Request completed",
-            Source = context.Request.Path,
+            Source = context.Request.Path.ToString(),
             CorrelationId = context.TraceIdentifier,
             ClientIp = context.Connection.RemoteIpAddress?.ToString(),
-            DurationMs = stopwatch.ElapsedMilliseconds
+            DurationMs = stopwatch.ElapsedMilliseconds,
+            HttpMethod = context.Request.Method,
+            StatusCode = context.Response.StatusCode
         };
 
-        await traceEventRepository.AddAsync(traceEvent);
+        if (exception != null)
+        {
+            traceEvent.Level = TraceEventLevels.Error;
+            traceEvent.Message = exception.Message;
+            traceEvent.ExceptionDetails = exception.ToString();
+            if (traceEvent.StatusCode == 0 || (traceEvent.StatusCode == 200 && exception != null))
+            {
+                traceEvent.StatusCode = 500;
+            }
+        }
+        else
+        {
+            traceEvent.Level = TraceEventLevels.Info;
+            traceEvent.Message = TraceEventMessages.RequestCompletedSuccessfully;
+        }
+
+        return traceEvent;
+    }
+    private async Task SafeAddTraceEventAsync(TraceEvent traceEvent)
+    {
+        try
+        {
+            await traceEventRepository.AddAsync(traceEvent);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "DevTrace: Failed to add trace event to the repository. TraceId: {TraceId}", traceEvent.Id);
+        }
     }
 }

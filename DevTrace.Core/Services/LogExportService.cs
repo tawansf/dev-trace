@@ -19,7 +19,7 @@ public class LogExportService(ITraceEventRepository repository) : ILogExportServ
         sb.AppendLine($"Client IP: {log.ClientIp}");
         sb.AppendLine($"Duration (ms): {log.DurationMs}");
         sb.AppendLine($"Correlation ID: {log.CorrelationId}");
-        sb.AppendLine($"Exception: {log.Exception}");
+        sb.AppendLine($"Exception: {log.ExceptionDetails}");
 
         var content = Encoding.UTF8.GetBytes(sb.ToString());
         return Task.FromResult(content);

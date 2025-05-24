@@ -10,7 +10,9 @@ public class TraceEvent
     public string? CorrelationId { get; set; }
     public string? ClientIp { get; set; }
     public string? Route { get; set; }
-    public string? Exception { get; set; }
+    public string? ExceptionDetails { get; set; }
     public string? Payload { get; set; }
     public long DurationMs { get; set; }
+    public int StatusCode { get; set; }
+    public string HttpMethod { get; set; }
 }
