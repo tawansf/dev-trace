@@ -2,26 +2,52 @@
 
 <table class="min-w-full divide-y divide-gray-200">
     <thead class="bg-gray-50">
-    <tr class="bg-gray-200">
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
-    </tr>
+        <tr class="bg-gray-200">
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client IP</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration (ms)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correlation ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Exception</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+        </tr>
     </thead>
     <tbody class="bg-white divide-y divide-gray-200">
-    @if (Items != null)
-    {
-        foreach (var item in Items.Cast<global::DevTrace.Core.Entities.TraceEvent>())
+        @if (Items != null)
         {
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Level</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Source</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Message</td>
-            </tr>
+            foreach (var item in Items.Cast<global::DevTrace.Shared.Models.TraceEvent>())
+            {
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Level</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Source</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.Message</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.ClientIp</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.DurationMs</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@item.CorrelationId</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        @if (!string.IsNullOrWhiteSpace(item.Exception))
+                        {
+                            <span title="@item.Exception" style="cursor: help; color: red;">Sim</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <a class="text-blue-600 hover:underline" 
+                           href="/devtrace/api/logs/@item.Id/download" 
+                           target="_blank" 
+                           download>
+                            Baixar .txt
+                        </a>
+                    </td>
+                </tr>
+            }
         }
-    }
     </tbody>
 </table>
 

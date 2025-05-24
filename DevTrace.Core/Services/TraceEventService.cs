@@ -1,23 +1,13 @@
-using DevTrace.Core.Entities;
-using DevTrace.Shared.Stores;
+using DevTrace.Core.Repositories;
+using DevTrace.Shared.Models;
 
 namespace DevTrace.Core.Services;
 
-public class TraceEventService: ITraceEventService
+public class TraceEventService(ITraceEventRepository repository) : ITraceEventService
 {
-    public Task<IReadOnlyList<TraceEvent>> GetEventsAsync(int maxCount = 100)
+    public async Task<IReadOnlyList<TraceEvent>> GetEventsAsync(int maxCount = 100)
     {
-        var logs = RequestLogStore.GetAll();
-
-        var events = logs.Select(log => new TraceEvent
-        {
-            Id = Guid.NewGuid(),
-            Timestamp = log.Timestamp,
-            Message = $"{log.Method} {log.Path}",
-            Source = "Middleware",
-            Level = log.StatusCode >= 500 ? "Error" : "Info"
-        }).ToList();
-
-        return Task.FromResult((IReadOnlyList<TraceEvent>)events);
+        var allEvents = await repository.GetAllAsync();
+        return allEvents.TakeLast(maxCount).ToList().AsReadOnly();
     }
 }

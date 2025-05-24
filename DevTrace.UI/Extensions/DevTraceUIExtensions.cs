@@ -1,6 +1,5 @@
+using DevTrace.Core.Repositories;
 using DevTrace.Core.Services;
-using DevTrace.UI.Middleware;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DevTrace.UI.Extensions
@@ -9,6 +8,9 @@ namespace DevTrace.UI.Extensions
     {
         public static IServiceCollection AddDevTraceUI(this IServiceCollection services)
         {
+            services.AddSingleton<ITraceEventRepository, TraceEventRepository>();
+            
+            services.AddScoped<ILogExportService, LogExportService>();
             services.AddScoped<ITraceEventService, TraceEventService>();
             
             return services;

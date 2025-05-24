@@ -13,9 +13,4 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.15" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Extensions\" />
-      <Folder Include="Helpers\" />
-    </ItemGroup>
-
 </Project>

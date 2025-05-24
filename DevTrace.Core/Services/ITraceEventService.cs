@@ -1,8 +1,8 @@
-using DevTrace.Core.Entities;
+using DevTrace.Shared.Models;
 
 namespace DevTrace.Core.Services;
 
 public interface ITraceEventService
 {
-    Task<IReadOnlyList<TraceEvent>> GetEventsAsync(int maxCount = 100);
+    public Task<IReadOnlyList<TraceEvent>> GetEventsAsync(int maxCount = 100);
 }

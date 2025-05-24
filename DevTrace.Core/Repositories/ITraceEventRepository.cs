@@ -1,4 +1,4 @@
-using DevTrace.Core.Entities;
+using DevTrace.Shared.Models;
 
 namespace DevTrace.Core.Repositories;
 
