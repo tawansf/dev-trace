@@ -1,5 +1,9 @@
 namespace DevTrace.Shared.Models;
 
+/// <summary>
+/// Represents a trace event that contains information about an event, such as its source,
+/// timestamp, severity level, associated details, and other metadata for logging or debugging purposes.
+/// </summary>
 public class TraceEvent
 {
     public Guid Id { get; set; }
