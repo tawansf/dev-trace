@@ -1,13 +1,13 @@
 # DevTrace
 
-🚀 **DevTrace** é uma biblioteca para monitoramento de requisições em aplicações .NET.  
-Ela registra as rotas acessadas, tempos de execução e códigos de status — exibindo tudo isso em um dashboard com diversos indicadores úteis.
+**DevTrace** é uma biblioteca para monitoramento de requisições em aplicações .NET.  
+Ela registra as rotas acessadas, tempos de execução, códigos de status, exceções — exibindo tudo isso em um dashboard com diversos indicadores úteis.
 
 ---
 
 ## 📦 Instalação
 
-Instale o pacote via NuGet (Ainda não criei o pacote):
+Instale o pacote via NuGet (O pacote não foi criado ainda!):
 
 ```bash
 dotnet add package DevTrace
@@ -17,7 +17,7 @@ dotnet add package DevTrace
 
 ## ⚙️ Configuração
 
-No seu `Program.cs`, adicione o serviço e a UI:
+No seu `Program.cs` ou `Startup.cs`, adicione o serviço e a UI:
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +28,7 @@ builder.Services.AddDevTrace();
 var app = builder.Build();
 
 // Habilita o rastreamento
-app.UseDevTrace(); // UI
+app.UseDevTrace();
 
 app.Run();
 ```
@@ -39,9 +39,10 @@ app.Run();
 
 - ✅ Registra todas as requisições recebidas e enviadas
 - ✅ Captura tempo de resposta e status HTTP
-- ✅ Exibe um dashboard acessível via `/devtrace`
+- ✅ Exportação de logs via .txt
+- ✅ Exibe um dashboard acessível via `/devtrace` por padrão.
 - ✅ Interface amigável e de fácil análise
-- ✅ Uso de IA para monitorar requisições problemáticas (Não implementado)
+
 
 ---
 
@@ -52,13 +53,15 @@ Após iniciar sua aplicação, vá para:
 ```
 https://localhost:{porta}/devtrace
 ```
-
+![img.png](img.png)
 ---
 
 ## 📊 Em breve
 
 - [ ] Filtros por status, métodos e endpoints
-- [ ] Exportação de logs
+- [ ] Adição de mais indicadores
+- [ ] Atualização em tempo real 
+- [x] Exportação de logs
 - [ ] Armazenamento em banco
 - [ ] Integração com algum modelo de IA para monitorar falhas
 
@@ -66,7 +69,7 @@ https://localhost:{porta}/devtrace
 
 ## 📃 Licença
 
-MIT © 
+MIT ©
 
 ---
 
