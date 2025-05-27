@@ -15,7 +15,7 @@ public class DevTraceOptions
 
     /// <summary>
     /// Path to the UI host page.
-    /// Default: "/_DevTraceHost".
+    /// Default: "/_Host".
     /// </summary>
     public string UiHostPagePath { get; set; } = "/_Host";
 
