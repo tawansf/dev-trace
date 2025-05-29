@@ -16,7 +16,6 @@ namespace DevTrace.Core.Middleware;
 /// </remarks>
 public sealed class DevTraceMiddleware(
     RequestDelegate next,
-    ITraceEventRepository traceEventRepository,
     ILogger<DevTraceMiddleware> logger)
 {
     /// <summary>
@@ -24,7 +23,7 @@ public sealed class DevTraceMiddleware(
     /// </summary>
     /// <param name="context">The HttpContext representing the current HTTP request and response.</param>
     /// <returns>A Task representing the asynchronous execution of the middleware.</returns>
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, ITraceEventRepository traceEventRepository)
     {
         if (context.Request.Path.StartsWithSegments("/devtrace"))
         {
@@ -40,7 +39,7 @@ public sealed class DevTraceMiddleware(
             stopwatch.Stop();
             
             var successEvent = CreateTraceEvent(context, stopwatch, null);
-            await SafeAddTraceEventAsync(successEvent);
+            await SafeAddTraceEventAsync(successEvent, traceEventRepository);
         }
         catch (Exception ex)
         {
@@ -50,7 +49,7 @@ public sealed class DevTraceMiddleware(
             }
 
             var errorEvent = CreateTraceEvent(context, stopwatch, ex);
-            await SafeAddTraceEventAsync(errorEvent);
+            await SafeAddTraceEventAsync(errorEvent, traceEventRepository);
 
             throw;
         }
@@ -101,7 +100,7 @@ public sealed class DevTraceMiddleware(
     /// </summary>
     /// <param name="traceEvent">The trace event containing details about the HTTP request or exception to be stored in the repository.</param>
     /// <returns>A Task representing the completion of the asynchronous operation.</returns>
-    private async Task SafeAddTraceEventAsync(TraceEvent traceEvent)
+    private async Task SafeAddTraceEventAsync(TraceEvent traceEvent, ITraceEventRepository traceEventRepository)
     {
         try
         {

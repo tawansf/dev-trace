@@ -1,6 +1,8 @@
+using DevTrace.Shared.Enums;
+
 namespace DevTrace.Shared.Options;
 
-public class DevTraceOptions
+public sealed class DevTraceOptions
 {
     /// <summary>
     /// Base path to the UI. Default: "/devtrace".
@@ -33,4 +35,29 @@ public class DevTraceOptions
     /// Skip the registration of the Blazor Server UI services.
     /// </summary>
     public bool SkipBlazorServerUIServicesRegistration { get; set; } = false;
+
+    /// <summary>
+    /// Specifies the database provider to be used for persistence.
+    /// Determines the type of database technology to interact with,
+    /// such as PostgreSQL, SQL Server, or None for in-memory storage.
+    /// Default: DatabaseProviderType.None.
+    /// </summary>
+    public DatabaseProviderType DatabaseProvider { get; set; } = DatabaseProviderType.None;
+
+    /// <summary>
+    /// The connection string used to configure the database connection for DevTrace.
+    /// Applicable when a database provider other than "None" is specified.
+    /// </summary>
+    public string? ConnectionString { get; set; }
+
+    /// <summary>
+    /// Indicates whether the migrations should be automatically applied
+    /// when using a database provider. Default is false.
+    /// </summary>
+    public bool AutoApplyMigrations { get; set; } = false;
+
+    /// <summary>
+    /// Specifies the name of the database schema used for storing logs. Default: "devtrace_logs".
+    /// </summary>
+    public string? DatabaseSchemaName { get; set; } = "devtrace_logs";
 }

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTrace.WebExample", "DevT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTrace.Shared", "DevTrace.Shared\DevTrace.Shared.csproj", "{B07BCE7D-7C4E-4183-808F-104DC6BAC0D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevTrace.Persistence", "DevTrace.Persistence\DevTrace.Persistence.csproj", "{1031E8B8-FFF7-4A81-9BA8-9818AC784ED3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{B07BCE7D-7C4E-4183-808F-104DC6BAC0D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B07BCE7D-7C4E-4183-808F-104DC6BAC0D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B07BCE7D-7C4E-4183-808F-104DC6BAC0D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1031E8B8-FFF7-4A81-9BA8-9818AC784ED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1031E8B8-FFF7-4A81-9BA8-9818AC784ED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1031E8B8-FFF7-4A81-9BA8-9818AC784ED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1031E8B8-FFF7-4A81-9BA8-9818AC784ED3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,10 +1,13 @@
 using DevTrace.Core.Middleware;
 using DevTrace.Core.Repositories;
 using DevTrace.Core.Services;
+using DevTrace.Persistence.EFCore;
+using DevTrace.Shared.Enums;
 using DevTrace.Shared.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
@@ -28,7 +31,73 @@ public static class DevTraceExtensions
         configure?.Invoke(options);
         services.AddSingleton(options);
         
-        services.AddSingleton<ITraceEventRepository, TraceEventRepository>();
+        services.AddLogging();
+        
+        bool useDatabasePersistence = options.DatabaseProvider != DatabaseProviderType.None && !string.IsNullOrEmpty(options.ConnectionString);
+
+        if (useDatabasePersistence)
+        {
+            services.AddDbContext<DevTraceDbContext>(dbCtxOptions =>
+            {
+                switch (options.DatabaseProvider)
+                {
+                    case DatabaseProviderType.PostgreSQL:
+                        dbCtxOptions.UseNpgsql(options.ConnectionString, npgsqlOptions =>
+                        {
+                            npgsqlOptions.MigrationsAssembly(typeof(DevTraceDbContext).Assembly.FullName);
+                        });
+                        break;
+                    case DatabaseProviderType.SQLServer:
+                        dbCtxOptions.UseSqlServer(options.ConnectionString, sqlServerOptions =>
+                        {
+                            sqlServerOptions.MigrationsAssembly(typeof(DevTraceDbContext).Assembly.FullName);
+                        });
+                        break;
+                    default:
+                        var logger = services.BuildServiceProvider().GetService<ILogger<DevTraceOptions>>();
+                        logger?.LogWarning("DevTrace: DatabaseProvider '{DbProvider}' não suportado. Usando repositório em memória.", options.DatabaseProvider);
+                        useDatabasePersistence = false;
+                        break;
+                }
+            });
+        }
+
+        if (useDatabasePersistence)
+        {
+            services.AddScoped<ITraceEventRepository, EFCoreTraceEventRepository>();
+            var logger = services.BuildServiceProvider().GetService<ILogger<DevTraceOptions>>();
+            logger?.LogInformation("DevTrace: Usando persistência de banco de dados com o provedor '{DbProvider}'.", options.DatabaseProvider);
+
+            if (options.AutoApplyMigrations)
+            {
+                try
+                {
+                    using var scope = services.BuildServiceProvider().CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<DevTraceDbContext>();
+                    dbContext.Database.Migrate();
+                    logger?.LogInformation("DevTrace: Migrações do banco de dados aplicadas (se houver pendentes).");
+                }
+                catch (Exception ex)
+                {
+                    logger?.LogError(ex, "DevTrace: Falha ao aplicar migrações do banco de dados ({DbProvider}).", options.DatabaseProvider);
+                }
+            }
+        }
+        else
+        {
+            var logger = services.BuildServiceProvider().GetService<ILogger<DevTraceOptions>>();
+            if (options.DatabaseProvider != DatabaseProviderType.None && string.IsNullOrEmpty(options.ConnectionString))
+            {
+                logger?.LogWarning("DevTrace: DatabaseProvider '{DbProvider}' foi especificado, mas a ConnectionString está vazia. Usando repositório em memória.", options.DatabaseProvider);
+            }
+            else
+            {
+                logger?.LogInformation("DevTrace: Nenhuma configuração de banco de dados válida. Usando repositório em memória.");
+            }
+            
+            services.AddSingleton<ITraceEventRepository, TraceEventRepository>();
+        }
+        
         services.AddScoped<ITraceEventService, TraceEventService>();
         services.AddScoped<ILogExportService, LogExportService>();
 

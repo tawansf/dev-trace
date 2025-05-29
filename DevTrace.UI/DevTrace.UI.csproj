@@ -13,12 +13,18 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\DevTrace.Persistence\DevTrace.Persistence.csproj" />
         <ProjectReference Include="..\DevTrace.Shared\DevTrace.Shared.csproj" />
         <ProjectReference Include="..\DevTrace.Core\DevTrace.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="wwwroot\**\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.16" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     </ItemGroup>
     
 </Project>

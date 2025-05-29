@@ -30,8 +30,18 @@ public class TraceEventRepository : ITraceEventRepository
     /// Asynchronously retrieves all trace events stored in the repository.
     /// </summary>
     /// <returns>A task representing the asynchronous operation, containing a collection of all trace events.</returns>
-    public Task<IEnumerable<TraceEvent>> GetAllAsync()
+    public Task<IEnumerable<TraceEvent>> GetAllAsync(int count = 100, string? level = null)
     {
         return Task.FromResult<IEnumerable<TraceEvent>>(_events.ToArray());
+    }
+
+    public Task<TraceEvent?> GetByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<TraceEvent>> GetRecentAsync(int maxCount = 100, string? level = null)
+    {
+        throw new NotImplementedException();
     }
 }

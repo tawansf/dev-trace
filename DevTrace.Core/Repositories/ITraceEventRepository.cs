@@ -21,5 +21,12 @@ public interface ITraceEventRepository
     /// Retrieves all trace events from the repository.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains a collection of all trace events.</returns>
-    Task<IEnumerable<TraceEvent>> GetAllAsync();
+    Task<IEnumerable<TraceEvent>> GetAllAsync(int count = 100, string? level = null);
+
+    /// <summary>
+    /// Retrieves a trace event from the repository by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the trace event to retrieve.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the trace event if found, or null if no event with the specified identifier exists.</returns>
+    Task<TraceEvent?> GetByIdAsync(Guid id);
 }
