@@ -18,5 +18,5 @@ public class TraceEvent
     public string? Payload { get; set; }
     public long DurationMs { get; set; }
     public int StatusCode { get; set; }
-    public string HttpMethod { get; set; }
+    public string? HttpMethod { get; set; }
 }

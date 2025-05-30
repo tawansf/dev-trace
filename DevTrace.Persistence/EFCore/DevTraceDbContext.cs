@@ -28,7 +28,6 @@ public sealed class DevTraceDbContext(DbContextOptions<DevTraceDbContext> option
             entity.Property(e => e.CorrelationId).HasMaxLength(100);
             entity.Property(e => e.ClientIp).HasMaxLength(45);
             entity.Property(e => e.HttpMethod).HasMaxLength(10);
-
             entity.HasIndex(e => e.Timestamp);
             entity.HasIndex(e => e.Level);
             entity.HasIndex(e => e.CorrelationId);

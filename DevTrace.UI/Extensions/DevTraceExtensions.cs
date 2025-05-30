@@ -2,6 +2,7 @@ using DevTrace.Core.Middleware;
 using DevTrace.Core.Repositories;
 using DevTrace.Core.Services;
 using DevTrace.Persistence.EFCore;
+using DevTrace.Persistence.EFCore.Hosting;
 using DevTrace.Shared.Enums;
 using DevTrace.Shared.Options;
 using Microsoft.AspNetCore.Authorization;
@@ -25,15 +26,17 @@ public static class DevTraceExtensions
     /// <param name="services">The IServiceCollection to which DevTrace services will be added.</param>
     /// <param name="configure">An optional Action to configure DevTraceOptions before adding services.</param>
     /// <returns>The IServiceCollection instance with the added DevTrace services.</returns>
-    public static IServiceCollection AddDevTrace(this IServiceCollection services, Action<DevTraceOptions>? configure = null)
+    public static IServiceCollection AddDevTrace(this IServiceCollection services,
+        Action<DevTraceOptions>? configure = null)
     {
         var options = new DevTraceOptions();
         configure?.Invoke(options);
         services.AddSingleton(options);
-        
+
         services.AddLogging();
-        
-        bool useDatabasePersistence = options.DatabaseProvider != DatabaseProviderType.None && !string.IsNullOrEmpty(options.ConnectionString);
+
+        bool useDatabasePersistence = options.DatabaseProvider != DatabaseProviderType.None &&
+                                      !string.IsNullOrEmpty(options.ConnectionString);
 
         if (useDatabasePersistence)
         {
@@ -42,67 +45,48 @@ public static class DevTraceExtensions
                 switch (options.DatabaseProvider)
                 {
                     case DatabaseProviderType.PostgreSQL:
-                        dbCtxOptions.UseNpgsql(options.ConnectionString, npgsqlOptions =>
-                        {
-                            npgsqlOptions.MigrationsAssembly(typeof(DevTraceDbContext).Assembly.FullName);
-                        });
+                        dbCtxOptions.UseNpgsql(options.ConnectionString,
+                            npgsqlOptions =>
+                            {
+                                npgsqlOptions.MigrationsAssembly(typeof(DevTraceDbContext).Assembly.FullName);
+                            });
                         break;
                     case DatabaseProviderType.SQLServer:
-                        dbCtxOptions.UseSqlServer(options.ConnectionString, sqlServerOptions =>
-                        {
-                            sqlServerOptions.MigrationsAssembly(typeof(DevTraceDbContext).Assembly.FullName);
-                        });
+                        dbCtxOptions.UseSqlServer(options.ConnectionString,
+                            sqlServerOptions =>
+                            {
+                                sqlServerOptions.MigrationsAssembly(typeof(DevTraceDbContext).Assembly.FullName);
+                            });
                         break;
                     default:
-                        var logger = services.BuildServiceProvider().GetService<ILogger<DevTraceOptions>>();
-                        logger?.LogWarning("DevTrace: DatabaseProvider '{DbProvider}' não suportado. Usando repositório em memória.", options.DatabaseProvider);
+                        Console.Error.WriteLine(
+                            $"DevTrace WARNING: DatabaseProvider '{options.DatabaseProvider}' não é suportado ou ConnectionString está ausente. DevTrace usará o repositório em memória.");
                         useDatabasePersistence = false;
                         break;
                 }
             });
-        }
 
-        if (useDatabasePersistence)
-        {
-            services.AddScoped<ITraceEventRepository, EFCoreTraceEventRepository>();
-            var logger = services.BuildServiceProvider().GetService<ILogger<DevTraceOptions>>();
-            logger?.LogInformation("DevTrace: Usando persistência de banco de dados com o provedor '{DbProvider}'.", options.DatabaseProvider);
-
-            if (options.AutoApplyMigrations)
+            if (useDatabasePersistence)
             {
-                try
+                services.AddScoped<ITraceEventRepository, EFCoreTraceEventRepository>();
+
+                if (options.AutoApplyMigrations)
                 {
-                    using var scope = services.BuildServiceProvider().CreateScope();
-                    var dbContext = scope.ServiceProvider.GetRequiredService<DevTraceDbContext>();
-                    dbContext.Database.Migrate();
-                    logger?.LogInformation("DevTrace: Migrações do banco de dados aplicadas (se houver pendentes).");
-                }
-                catch (Exception ex)
-                {
-                    logger?.LogError(ex, "DevTrace: Falha ao aplicar migrações do banco de dados ({DbProvider}).", options.DatabaseProvider);
+                    services.AddHostedService<DevTraceDatabaseMigratorHostedService>();
                 }
             }
         }
-        else
+
+        if (!useDatabasePersistence)
         {
-            var logger = services.BuildServiceProvider().GetService<ILogger<DevTraceOptions>>();
-            if (options.DatabaseProvider != DatabaseProviderType.None && string.IsNullOrEmpty(options.ConnectionString))
-            {
-                logger?.LogWarning("DevTrace: DatabaseProvider '{DbProvider}' foi especificado, mas a ConnectionString está vazia. Usando repositório em memória.", options.DatabaseProvider);
-            }
-            else
-            {
-                logger?.LogInformation("DevTrace: Nenhuma configuração de banco de dados válida. Usando repositório em memória.");
-            }
-            
             services.AddSingleton<ITraceEventRepository, TraceEventRepository>();
         }
-        
+
         services.AddScoped<ITraceEventService, TraceEventService>();
         services.AddScoped<ILogExportService, LogExportService>();
 
         services.AddDevTraceUI(options);
-        
+
         return services;
     }
 
@@ -116,14 +100,11 @@ public static class DevTraceExtensions
     {
         if (!options.SkipBlazorServerUIServicesRegistration)
         {
-            services.AddServerSideBlazor(o =>
-            {
-                o.DetailedErrors = true;
-            });
-            
+            services.AddServerSideBlazor(o => { o.DetailedErrors = true; });
+
             services.AddRazorPages();
         }
-        
+
         return services;
     }
 
@@ -139,7 +120,8 @@ public static class DevTraceExtensions
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new EmbeddedFileProvider(typeof(DevTraceExtensions).Assembly, options.EmbeddedUiAssetsNamespace),
+            FileProvider =
+                new EmbeddedFileProvider(typeof(DevTraceExtensions).Assembly, options.EmbeddedUiAssetsNamespace),
             RequestPath = options.UiPath
         });
 
@@ -159,7 +141,8 @@ public static class DevTraceExtensions
                 if (!string.IsNullOrEmpty(options.DownloadLogsAuthorizationPolicyName))
                 {
                     var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
-                    var authorized = await authorizationService.AuthorizeAsync(context.User, options.DownloadLogsAuthorizationPolicyName);
+                    var authorized = await authorizationService.AuthorizeAsync(context.User,
+                        options.DownloadLogsAuthorizationPolicyName);
                     if (!authorized.Succeeded)
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
@@ -167,14 +150,15 @@ public static class DevTraceExtensions
                         return;
                     }
                 }
-                
-                if (!context.Request.RouteValues.TryGetValue("id", out var idObj) || idObj is not string idStr || !Guid.TryParse(idStr, out var id))
+
+                if (!context.Request.RouteValues.TryGetValue("id", out var idObj) || idObj is not string idStr ||
+                    !Guid.TryParse(idStr, out var id))
                 {
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     await context.Response.WriteAsync("ID do trace inválido ou ausente.");
                     return;
                 }
-                
+
                 var exportService = context.RequestServices.GetRequiredService<ILogExportService>();
                 var apiLogger = loggerFactory.CreateLogger("DevTrace.ApiEndpoints");
 
@@ -204,7 +188,7 @@ public static class DevTraceExtensions
                 }
             });
         });
-        
+
         return app;
     }
 }
